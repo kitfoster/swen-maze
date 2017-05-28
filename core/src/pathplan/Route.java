@@ -41,15 +41,11 @@ public class Route {
 		}
 		return direction;
 	}
-
-
-
 	private boolean doesDirectionAlign(Car car, WorldSpatial.Direction direction) throws Exception{
 		if(direction ==null){
 			//System.out.println("Something is wrong");
 			throw new Exception("Wrong");
 		}
-
 		if(car.getOrientation().equals(direction)){
 			//System.out.println("Car Orientation: "+car.getOrientation() + "Path Orientation" + direction);
 			return true;
@@ -59,7 +55,6 @@ public class Route {
 		}
 
 	}
-
 
 
 	public WorldSpatial.RelativeDirection getTurningDirection(Car car) throws Exception{
@@ -122,7 +117,5 @@ public class Route {
 		}
 
 	}
-
-
 
 }
