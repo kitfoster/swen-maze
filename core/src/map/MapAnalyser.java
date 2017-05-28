@@ -10,7 +10,7 @@ import world.World;
 import world.WorldSpatial;
 
 public class MapAnalyser<Cooridnate> {
-	int wallSensitivity = 3;
+	int wallSensitivity = 2;
 	
 	HashMap<Coordinate, MapTile> map = new HashMap<>();
 	
@@ -24,10 +24,24 @@ public class MapAnalyser<Cooridnate> {
 	}
 	
 	public Coordinate getWallCoord(){
-		return this.wallCoord;
+		Coordinate coord = wallCoord;
+		wallCoord =null;
+		
+		return  coord;
 	}
 	
-	public boolean checkWall(Car car, WorldSpatial.Direction direction){
+	//Returns null if there is no blocking
+	public Coordinate getBlockingAt(int dist, Car car, WorldSpatial.Direction direction){
+		Coordinate checkCoord = getCoordinateAt(dist, car, direction);
+		if(map.containsKey(checkCoord)&& (map.get(checkCoord).getName().equals(World.WALL)||
+				map.get(checkCoord).getName().equals(World.TRAP))){
+			return checkCoord;
+		}
+		return null;
+	}
+	
+	//Get the coordinate of the cell at distance: dist from the car in direction: Direction
+	Coordinate getCoordinateAt(int dist, Car car ,WorldSpatial.Direction direction){
 		int i=0,j=0;
 		switch(direction){
 		case NORTH:
@@ -46,41 +60,28 @@ public class MapAnalyser<Cooridnate> {
 			break;		
 		}
 		
-		System.out.println("Current Orientation: "+ direction);
-		
-		Coordinate currentPos = new Coordinate( car.getPosition());
-		
-		int x=currentPos.x+i, y=currentPos.y+j;
-		for(int k=0; k<wallSensitivity; k++){
-			
-			Coordinate coor = new Coordinate(x,y);
+		Coordinate carCoord = new Coordinate(car.getPosition());
+		Coordinate coord = new Coordinate(carCoord.x+i*dist, carCoord.y+j*dist);
+		return coord;
+	}
 	
-			if( !map.containsKey(coor))
-				continue;
-			if(map.get(coor).getName().equals(World.WALL)){
-				System.out.println("MapAnalyser:CheckInfront:  There is Wall");
-				wallCoord = coor;
+	//Is there blocking of type  Trap within the distance
+	
+	public boolean isBlockingWithin(int dist, Car car, WorldSpatial.Direction direction, String trap){
+		
+		for(int i =1;i<= dist;i++){
+			Coordinate checkCoord = getCoordinateAt(i, car, direction);
+			if(map.containsKey(checkCoord)&& map.get(checkCoord).getName().equals(trap)){
 				return true;
 			}
-			x+=i;
-
 		}
+		return false;
 		
-		for(int k=0; k<wallSensitivity; k++ ){
-			Coordinate coor = new Coordinate(x,y);
-			if( !map.containsKey(coor))
-				continue;
-			
-			if(map.get(coor).getName().equals(World.WALL)){
-				System.out.println("MapAnalyser:CheckInfront:  There is Wall");
-				wallCoord = coor;
-				return true;
-			}
-			y+=j;
-		}
-		
-		System.out.println("MapAnalyser:CheckInfront:  There is NO Wall");
-		return false;	
+	}
+	
+	
+	public Coordinate getWallInfront(){
+		return wallCoord;
 	}
 	
 	public boolean hasBeen(Coordinate coord){
@@ -89,25 +90,5 @@ public class MapAnalyser<Cooridnate> {
 		else
 			return false;	
 	}
-	
-	
-private boolean checkFollowingWall(WorldSpatial.Direction orientation, HashMap<Coordinate, MapTile> currentView) {
-		
-		switch(orientation){
-		case EAST:
-			return checkNorth(currentView);
-		case NORTH:
-			return checkWest(currentView);
-		case SOUTH:
-			return checkEast(currentView);
-		case WEST:
-			return checkSouth(currentView);
-		default:
-			return false;
-		}
-		
-	}
-	
-	
 	
 }

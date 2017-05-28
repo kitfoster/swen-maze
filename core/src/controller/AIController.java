@@ -2,10 +2,14 @@ package controller;
 
 import java.util.HashMap;
 
+
 import map.MapAnalyser;
+import pathplan.PathPlanner;
+import pathplan.WallPathPlanner;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
+import world.World;
 import world.WorldSpatial;
 
 public class AIController extends CarController {
@@ -13,6 +17,8 @@ public class AIController extends CarController {
 	// How many minimum units the wall is away from the player.
 	private int wallSensitivity = 2;
 	
+	public State state= State.Start;
+	public enum State {Start, Planning, Going};
 	
 	private boolean isFollowingWall = false; // This is initialized when the car sticks to a wall.
 	private WorldSpatial.RelativeDirection lastTurnDirection = null; // Shows the last turn direction the car takes.
@@ -22,9 +28,12 @@ public class AIController extends CarController {
 	MapAnalyser mapAnalyser = new MapAnalyser();
 	// Car Speed to move at
 	private final float CAR_SPEED = 3;
+	private PathPlanner planner= new WallPathPlanner();
 	
 	// Offset used to differentiate between 0 and 360 degrees
 	private int EAST_THRESHOLD = 3;
+	
+	private pathplan.Route curRoute;
 	
 	public AIController(Car car) {
 		super(car);
@@ -38,37 +47,62 @@ public class AIController extends CarController {
 		
 		
 		mapAnalyser.update(currentView);
-		mapAnalyser.checkWall(car, car.getOrientation());
+		
 		checkStateChange();
 		
 
 
 		// If you are not following a wall initially, find a wall to stick to!
-		if(!isFollowingWall){
+		switch (this.state){
+		case Start:
 			if(getVelocity() < CAR_SPEED){
 				applyForwardAcceleration();
 			}
-			// Turn towards the north
-			if(!getOrientation().equals(WorldSpatial.Direction.NORTH)){
-				lastTurnDirection = WorldSpatial.RelativeDirection.LEFT;
-				applyLeftTurn(getOrientation(),delta);
-			}
-			if(checkNorth(currentView)){
-				// Turn right until we go back to east!
-				if(!getOrientation().equals(WorldSpatial.Direction.EAST)){
-					lastTurnDirection = WorldSpatial.RelativeDirection.RIGHT;
-					applyRightTurn(getOrientation(),delta);
-				}
-				else{
-					isFollowingWall = true;
-				}
-			}
-		}
-		// Once the car is already stuck to a wall, apply the following logic
-		else{
 			
+			if(mapAnalyser.isBlockingWithin(2, car, car.getOrientation(),World.WALL)||
+					mapAnalyser.isBlockingWithin(2, car, car.getOrientation(),World.TRAP)){
+				// Turn right until we go back to east!
+					this.state = State.Planning;
+			}
+			break;
+		case Planning:
+			
+			
+			
+			curRoute = planner.findNewRoute(car, mapAnalyser,
+					mapAnalyser.getBlockingAt(2, car, car.getOrientation()));
+			this.state= State.Going;
+			curRoute.printRoute();
+			break;
+		case Going:
+			try{
+				
+				if( curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.RIGHT)){
+					lastTurnDirection= WorldSpatial.RelativeDirection.RIGHT;
+					applyRightTurn(getOrientation(),delta);
+					
+				}else if(curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.LEFT)){
+					lastTurnDirection= WorldSpatial.RelativeDirection.RIGHT;
+					applyLeftTurn(getOrientation(),delta);
+				}else{
+					applyForwardAcceleration();
+				}
+				
+			}catch (Exception e){
+			}
+			
+			//readjust(lastTurnDirection,delta);
+			if(curRoute.isRouteDone(car)){
+				this.state=State.Planning;
+			}
+			
+			if(getVelocity() < CAR_SPEED){
+				applyForwardAcceleration();
+			}
+			break;
+			/*
 			// Readjust the car if it is misaligned.
-			readjust(lastTurnDirection,delta);
+			
 			
 			if(isTurningRight){
 				applyRightTurn(getOrientation(),delta);
@@ -101,8 +135,12 @@ public class AIController extends CarController {
 				lastTurnDirection = WorldSpatial.RelativeDirection.LEFT;
 				isTurningLeft = true;
 			}
-		}
+			
+			break;
+			*/
 		
+		
+		}
 
 
 	}

@@ -68,6 +68,7 @@ public class World {
 		car.setOriginCenter();
 		System.out.println(map.getLayers().get("Wall"));
 		
+		
 		// Add the car controller
 		// controller = new ManualController(car);
 		controller = new AIController(car);
