@@ -2,6 +2,7 @@ package controller;
 
 import java.util.HashMap;
 
+import map.MapAnalyser;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
@@ -18,7 +19,7 @@ public class AIController extends CarController {
 	private boolean isTurningLeft = false;
 	private boolean isTurningRight = false; 
 	private WorldSpatial.Direction previousState = null; // Keeps track of the previous state
-	
+	MapAnalyser mapAnalyser = new MapAnalyser();
 	// Car Speed to move at
 	private final float CAR_SPEED = 3;
 	
@@ -36,7 +37,10 @@ public class AIController extends CarController {
 		HashMap<Coordinate, MapTile> currentView = getView();
 		
 		
+		mapAnalyser.update(currentView);
+		mapAnalyser.checkWall(car, car.getOrientation());
 		checkStateChange();
+		
 
 
 		// If you are not following a wall initially, find a wall to stick to!
