@@ -46,7 +46,7 @@ public class World {
 	private static String[] LAYER_NAME = {"Road","Utility","Trap","Wall"};
 	public static String WALL = "Wall";
 	public static String ROAD = "Road";
-	public static String TRAP = "TRAP";
+	public static String TRAP = "Trap";
 	public static String UTILITy = "Utility";
 	
 	private static HashMap<Coordinate,MapTile> mapTiles = new HashMap<Coordinate,MapTile>();

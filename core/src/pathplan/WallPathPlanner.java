@@ -12,14 +12,19 @@ import world.WorldSpatial;
 public class WallPathPlanner implements PathPlanner{
 	public enum RelativeDirection {Parallel, Prependicular}
 
-	private int lengthLimit =5;
+	private int lengthLimit =16;
 	
 	@Override
-	public Route findNewRoute(Car car, MapAnalyser mapAnalyser, Coordinate wallCoord) {
+	public Route findNewRoute(Car car, MapAnalyser mapAnalyser, Coordinate wallCoord, WorldSpatial.RelativeDirection turn) {
 		// TODO Auto-generated method stub
 		
 		System.out.println("Creating a new Path");
+		WorldSpatial.Direction carDirection = car.getOrientation();
+		if(turn!=null){
+			carDirection  = WorldSpatial.getDirection(turn, carDirection);
+		}
 		
+		System.out.println("The direction of me: " + carDirection);
 		
 		
 		
@@ -28,7 +33,7 @@ public class WallPathPlanner implements PathPlanner{
 		int x = carCoord.x;
 		int y = carCoord.y;
 		int a=0,b=0;
-		switch(car.getOrientation()){
+		/*switch(carDirection){
 		case EAST:
 			x+=1;		
 			a+=1;
@@ -48,28 +53,37 @@ public class WallPathPlanner implements PathPlanner{
 		default:
 			break;
 		}
-		coordToFollow.add(new Coordinate(x,y));
+		coordToFollow.add(new Coordinate(x,y));*/
 		
 		
 		if(wallCoord == null){
+			System.out.println("WallPathPlanner: No blocking infront");
 			for(int i =0;i<lengthLimit;i++){
+				
+				coordToFollow.add(new Coordinate(x,y));
 				x+=a;
 				y+=b;
-				coordToFollow.add(new Coordinate(x,y));
 			}
 			
 		}else{
-		
+			
+			
+			
+			System.out.println("WallPathPlanner: Blocking Infront" + mapAnalyser.getTileName(wallCoord));
+			System.out.println("The direction of me: " + carDirection);
 			int i=0,j=0;
 			WorldSpatial.RelativeDirection relDirect = null;
-			WorldSpatial.Direction turnedDirection = WorldSpatial.getDirection(WorldSpatial.RelativeDirection.LEFT, car.getOrientation());
-			if(mapAnalyser.isBlockingWithin(2,car, turnedDirection,World.WALL)||mapAnalyser.isBlockingWithin(2,car, turnedDirection,World.TRAP)){
+			WorldSpatial.Direction turnedDirection = WorldSpatial.getDirection(WorldSpatial.RelativeDirection.LEFT, carDirection);
+			//Check if the direction I turn in has blockings infront of me
+			if(mapAnalyser.isBlockingWithin(2,car, turnedDirection)){
+				System.out.println("Turn Right");
 				relDirect=WorldSpatial.RelativeDirection.RIGHT;
 			}else{
+				System.out.println("Turn Left");
 				relDirect=WorldSpatial.RelativeDirection.LEFT;
 			}
-			
-			switch( WorldSpatial.getDirection(relDirect, car.getOrientation())){
+			//The following path I will take
+			switch( WorldSpatial.getDirection(relDirect,carDirection )){
 			case EAST:
 				i+=1;					
 				break;
@@ -86,9 +100,10 @@ public class WallPathPlanner implements PathPlanner{
 				break;
 			}
 			for(int k=0;k<lengthLimit;k++){
+				
+				coordToFollow.add(new Coordinate(x,y));
 				x+=i;
 				y+=j;
-				coordToFollow.add(new Coordinate(x,y));
 			}
 			
 			/*if(i!=0){

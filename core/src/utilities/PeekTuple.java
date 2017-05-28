@@ -16,4 +16,10 @@ public class PeekTuple{
 	public boolean getReachable(){
 		return this.reachable;
 	}
+	public String toString(){
+		
+		String s= "PeekTuple: End up at "+ coordinate.x +","+coordinate.y;
+		return s;
+		
+	}
 }

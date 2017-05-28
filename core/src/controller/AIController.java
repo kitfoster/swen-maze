@@ -8,6 +8,7 @@ import pathplan.PathPlanner;
 import pathplan.WallPathPlanner;
 import tiles.MapTile;
 import utilities.Coordinate;
+import utilities.PeekTuple;
 import world.Car;
 import world.World;
 import world.WorldSpatial;
@@ -27,8 +28,9 @@ public class AIController extends CarController {
 	private WorldSpatial.Direction previousState = null; // Keeps track of the previous state
 	MapAnalyser mapAnalyser = new MapAnalyser();
 	// Car Speed to move at
-	private final float CAR_SPEED = 3;
+	private final float CAR_SPEED = 1.5f;
 	private PathPlanner planner= new WallPathPlanner();
+	private Coordinate tileToAvoid = null;
 	
 	// Offset used to differentiate between 0 and 360 degrees
 	private int EAST_THRESHOLD = 3;
@@ -45,7 +47,6 @@ public class AIController extends CarController {
 		// Gets what the car can see
 		HashMap<Coordinate, MapTile> currentView = getView();
 		
-		
 		mapAnalyser.update(currentView);
 		
 		checkStateChange();
@@ -59,18 +60,17 @@ public class AIController extends CarController {
 				applyForwardAcceleration();
 			}
 			
-			if(mapAnalyser.isBlockingWithin(2, car, car.getOrientation(),World.WALL)||
-					mapAnalyser.isBlockingWithin(2, car, car.getOrientation(),World.TRAP)){
+			if(mapAnalyser.isBlockingWithin(2, car, car.getOrientation())){
 				// Turn right until we go back to east!
 					this.state = State.Planning;
+					tileToAvoid =mapAnalyser.getBlockingAt(2, car, car.getOrientation());
 			}
 			break;
 		case Planning:
 			
 			
-			
-			curRoute = planner.findNewRoute(car, mapAnalyser,
-					mapAnalyser.getBlockingAt(2, car, car.getOrientation()));
+			curRoute = planner.findNewRoute(car, mapAnalyser,tileToAvoid,lastTurnDirection);
+			tileToAvoid=null;
 			this.state= State.Going;
 			curRoute.printRoute();
 			break;
@@ -78,21 +78,43 @@ public class AIController extends CarController {
 			try{
 				
 				if( curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.RIGHT)){
+					if(curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta)){
+						curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta);
+						applyRightTurn(getOrientation(),delta);
+						
+					}
+					isTurningRight=  true;
 					lastTurnDirection= WorldSpatial.RelativeDirection.RIGHT;
-					applyRightTurn(getOrientation(),delta);
+					
 					
 				}else if(curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.LEFT)){
-					lastTurnDirection= WorldSpatial.RelativeDirection.RIGHT;
-					applyLeftTurn(getOrientation(),delta);
-				}else{
+					if(curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta)){
+						curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta);
+						applyLeftTurn(getOrientation(),delta);
+						
+					}
+					isTurningLeft = true;
+					lastTurnDirection= WorldSpatial.RelativeDirection.LEFT;
+					
+				}else {
+					System.out.println("NOT Still Turning");
+					isTurningLeft = false;
+					isTurningRight = false;
+					lastTurnDirection = null;
 					applyForwardAcceleration();
 				}
 				
 			}catch (Exception e){
 			}
+
+
 			
-			//readjust(lastTurnDirection,delta);
+			readjust(lastTurnDirection,delta);
 			if(curRoute.isRouteDone(car)){
+				this.state=State.Planning;
+			}
+			if(curRoute.isRouteBlocked(mapAnalyser)){
+				tileToAvoid = curRoute.getBlockedTile(mapAnalyser);
 				this.state=State.Planning;
 			}
 			

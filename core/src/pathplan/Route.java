@@ -2,7 +2,9 @@ package pathplan;
 
 import java.util.ArrayList;
 
+import map.MapAnalyser;
 import utilities.Coordinate;
+import utilities.PeekTuple;
 import world.Car;
 import world.WorldSpatial;
 import world.WorldSpatial.Direction;
@@ -42,6 +44,12 @@ public class Route {
 		return direction;
 	}
 	
+	public boolean isRouteBlocked(MapAnalyser mapAnalyser){
+		if(this.getBlockedTile(mapAnalyser)!=null){
+			return true;
+		}
+		return false;
+	}
 	
 	
 	private boolean doesDirectionAlign(Car car, WorldSpatial.Direction direction) throws Exception{
@@ -60,18 +68,29 @@ public class Route {
 		
 	}
 	
-	
+	public boolean coordinateNotInPath(Coordinate carCoord){
+		
+		if(this.path.contains(carCoord)){
+			return true;
+		}
+		return false;
+	}
 	
 	public WorldSpatial.RelativeDirection getTurningDirection(Car car) throws Exception{
 		Coordinate carCoord = new Coordinate(car.getPosition());
 		if(carCoord.equals(path.get(curStep))){
 			curStep++;
 		}else{
-			//System.out.println("Car coordinate: "+ carCoord.toString()+ "Next Tile Coordinate: "+ path.get(curStep).toString());
+			System.out.println("Car coordinate: "+ carCoord.toString()+ "Next Tile Coordinate: "+ path.get(curStep).toString());
 		}
 		
 	
 		WorldSpatial.Direction direction = findPathDirection();
+		
+		
+		if(coordinateNotInPath(carCoord)){
+			
+		}
 		
 		if(!doesDirectionAlign(car,direction)){
 			
@@ -90,10 +109,60 @@ public class Route {
 		
 	}
 	
+	public boolean willBeOnTrack(Car car, WorldSpatial.RelativeDirection turn, float delta){
+	
+		
+		WorldSpatial.Direction directionInEnd = WorldSpatial.getDirection(turn, car.getOrientation());
+
+		int degree = 0;
+		switch( directionInEnd){
+	
+		case EAST:
+			degree = WorldSpatial.EAST_DEGREE_MIN;
+			break;
+		case WEST:
+			degree = WorldSpatial.WEST_DEGREE;
+			break;
+		case SOUTH:
+			degree = WorldSpatial.SOUTH_DEGREE;
+			break;
+		case NORTH:
+			degree = WorldSpatial.NORTH_DEGREE;
+			break;
+		default:
+			break;
+		}
+		
+		PeekTuple tuple = car.peek(car.getRawVelocity(), degree, 
+				WorldSpatial.RelativeDirection.LEFT , delta);
+		
+		System.out.println(tuple.toString());
+		
+		if(this.path.contains(tuple.getCoordinate())){
+			return true;
+		}
+		return false;
+	}
+	
 	
 	Coordinate getNextStep(){
 		steps++;
 		return path.get(steps-1);
+		
+	}
+	public Coordinate getBlockedTile(MapAnalyser mapAnalyser){
+		int limit = curStep+2;
+		if(limit > path.size()){
+			limit = path.size();
+		}
+		
+		for(int i = curStep;i<limit;i++){
+			if(mapAnalyser.isTileBlocked(path.get(i))){
+				System.out.println("Tile blocked coordinate being:" +path.get(i).x +","+ path.get(i).y );
+				return path.get(i);
+			}
+		}
+		return null;
 		
 	}
 	

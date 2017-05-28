@@ -35,7 +35,7 @@ public class WorldSpatial {
 				return WorldSpatial.Direction.WEST;
 			}
 		}
-		return direct;		
+		return null;		
 	}
 	
 	public final static int EAST_DEGREE_MIN = 0;

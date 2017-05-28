@@ -64,6 +64,7 @@ public class Car extends Sprite{
 	
 	
 	
+	
 	private static enum State { FORWARD, REVERSE };
 	private static State carDirection = State.FORWARD;
 	
@@ -279,6 +280,25 @@ public class Car extends Sprite{
 	}
 
 
+	public float getTurnRightAngle(float delta){
+		float ang =  angle; 
+				ang-= ROTATING_FACTOR * delta;
+
+		if(reversing){
+			ang *= -1;
+		}
+		return ang;
+	}
+	public float getTurnLeftAngle(float delta){
+		float ang =  angle; 
+				ang+= ROTATING_FACTOR * delta;
+
+		if(reversing){
+			ang *= -1;
+		}
+		return ang;
+	}
+	
 	public void turnRight(float delta) {
 		angle -= ROTATING_FACTOR * delta;
 
@@ -286,7 +306,7 @@ public class Car extends Sprite{
 			angle *= -1;
 		}
 		snapTo(reversing,currentOrientation,WorldSpatial.RelativeDirection.RIGHT);
-
+			
 	}
 	
 	private void applySteering(){
