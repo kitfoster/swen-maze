@@ -1,6 +1,7 @@
 package pathplan;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import utilities.Coordinate;
 import world.Car;
@@ -9,12 +10,12 @@ import world.WorldSpatial.Direction;
 import world.WorldSpatial.RelativeDirection;
 
 public class Route {
-	ArrayList<Coordinate> path;
+	LinkedList<Action> path;
 	private int steps=0;
 	private int curStep=0;
 	private boolean finished=false;
 	private WorldSpatial.Direction direction;
-	Route(ArrayList<Coordinate> path){
+	Route(LinkedList<Coordinate> path){
 		this.path=path;
 		this.steps = path.size();
 	}
@@ -101,7 +102,7 @@ public class Route {
 		}
 	}
 	
-	public ArrayList<Coordinate> getPath(){
+	public LinkedList<Action> getPath(){
 		return path;
 	}
 	

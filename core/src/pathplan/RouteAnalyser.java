@@ -1,9 +1,13 @@
 package pathplan;
 
-public class RouteAnalyser {
+import java.util.LinkedList;
 
-	public void analyserRoute(Route curRoute){
-		
+public class RouteAnalyser {
+	
+	Linked
+	
+	public LinkedList<Action> AnalyseRoute(Route route) {
 		
 	}
+
 }
