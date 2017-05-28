@@ -18,17 +18,16 @@ public class Route {
 		this.path=path;
 		this.steps = path.size();
 	}
-
+	
 	private WorldSpatial.Direction findPathDirection(){
-
+		
 		int step = curStep;
 		int thisX = path.get(step).x, thisY = path.get(step).y;
 		step++;
 		int nextX = path.get(step).x, nextY = path.get(step).y;
-
+		
 		int diffX = nextX -thisX, diffY = nextY-thisY;
 		WorldSpatial.Direction direction = null;
-
 		if(diffX>0){
 			direction = WorldSpatial.Direction.EAST;
 		}else if(diffX <0){
@@ -41,11 +40,13 @@ public class Route {
 		}
 		return direction;
 	}
+
 	private boolean doesDirectionAlign(Car car, WorldSpatial.Direction direction) throws Exception{
 		if(direction ==null){
 			//System.out.println("Something is wrong");
 			throw new Exception("Wrong");
 		}
+
 		if(car.getOrientation().equals(direction)){
 			//System.out.println("Car Orientation: "+car.getOrientation() + "Path Orientation" + direction);
 			return true;
@@ -53,10 +54,11 @@ public class Route {
 			//System.out.println("WRONG Car Orientation: "+car.getOrientation() + "Path Orientation" + direction);
 			return false;
 		}
-
+		
 	}
-
-
+	
+	
+	
 	public WorldSpatial.RelativeDirection getTurningDirection(Car car) throws Exception{
 		Coordinate carCoord = new Coordinate(car.getPosition());
 		if(carCoord.equals(path.get(curStep))){
@@ -64,14 +66,13 @@ public class Route {
 		}else{
 			//System.out.println("Car coordinate: "+ carCoord.toString()+ "Next Tile Coordinate: "+ path.get(curStep).toString());
 		}
-
-
+	
 		WorldSpatial.Direction direction = findPathDirection();
-
+		
 		if(!doesDirectionAlign(car,direction)){
-
+			
 			WorldSpatial.RelativeDirection turn = WorldSpatial.RelativeDirection.LEFT;
-
+			
 			if(WorldSpatial.getDirection(turn, car.getOrientation()).equals(direction)){
 				//System.out.println("Direction To Turn: "+turn);
 				return turn;
@@ -82,16 +83,16 @@ public class Route {
 			}
 		}
 		return null;
-
+		
 	}
-
-
+	
+	
 	Coordinate getNextStep(){
 		steps++;
 		return path.get(steps-1);
-
+		
 	}
-
+	
 	public boolean isRouteDone(Car car){
 		Coordinate end = path.get(path.size()-1);
 		Coordinate carCoord= new Coordinate(car.getPosition());
@@ -101,15 +102,15 @@ public class Route {
 			return false;
 		}
 	}
-
+	
 	public ArrayList<Coordinate> getPath(){
 		return path;
 	}
-
+	
 	public boolean isDone(){
 		return finished;
 	}
-
+	
 	public void printRoute(){
 		System.out.println("New Route");
 		for(int i=0;i<steps;i++){
