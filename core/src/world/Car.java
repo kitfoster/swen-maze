@@ -603,9 +603,6 @@ public class Car extends Sprite{
 			}
 			currentAngle = 0;
 		}
-		
-		
-
 		return new PeekTuple(new Coordinate(Math.round(currentX), Math.round(currentY)),reachable);
 		
 	}
