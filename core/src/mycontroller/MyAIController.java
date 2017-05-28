@@ -5,15 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import controller.CarController;
+import mycontroller.Action.Move;
 import controller.AIController.State;
-import map.MapAnalyser;
-import map.PotentialRoom;
-import pathplan.Action;
-import pathplan.Action.Move;
-import pathplan.PathPlanner;
-import pathplan.ReRouter;
-import pathplan.Route;
-import pathplan.WallPathPlanner;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
@@ -62,7 +55,7 @@ public class MyAIController extends CarController{
 		// TODO Auto-generated constructor stub
 	}
 	
-	private pathplan.Route curRoute;
+	//private pathplan.Route curRoute;
 	
 	
 
@@ -94,17 +87,17 @@ public class MyAIController extends CarController{
 		case Planning:
 			
 			
-			curRoute = planner.findNewRoute(car, mapAnalyser,tileToAvoid,lastTurnDirection);
+			currentRoute = planner.findNewRoute(car, mapAnalyser,tileToAvoid,lastTurnDirection);
 			tileToAvoid=null;
 			this.state= State.Going;
-			curRoute.printRoute();
+			currentRoute.printRoute();
 			break;
 		case Going:
 			try{
 				
-				if( curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.RIGHT)){
-					if(curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta)){
-						curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta);
+				if( currentRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.RIGHT)){
+					if(currentRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta)){
+						currentRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.RIGHT, delta);
 						applyRightTurn(getOrientation(),delta);
 						
 					}
@@ -112,9 +105,9 @@ public class MyAIController extends CarController{
 					lastTurnDirection= WorldSpatial.RelativeDirection.RIGHT;
 					
 					
-				}else if(curRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.LEFT)){
-					if(curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta)){
-						curRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta);
+				}else if(currentRoute.getTurningDirection(car).equals(WorldSpatial.RelativeDirection.LEFT)){
+					if(currentRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta)){
+						currentRoute.willBeOnTrack(car, WorldSpatial.RelativeDirection.LEFT, delta);
 						applyLeftTurn(getOrientation(),delta);
 						
 					}
@@ -135,11 +128,11 @@ public class MyAIController extends CarController{
 
 			
 			readjust(lastTurnDirection,delta);
-			if(curRoute.isRouteDone(car)){
+			if(currentRoute.isRouteDone(car)){
 				this.state=State.Planning;
 			}
-			if(curRoute.isRouteBlocked(mapAnalyser)){
-				tileToAvoid = curRoute.getBlockedTile(mapAnalyser);
+			if(currentRoute.isRouteBlocked(mapAnalyser)){
+				tileToAvoid = currentRoute.getBlockedTile(mapAnalyser);
 				this.state=State.Planning;
 			}
 			

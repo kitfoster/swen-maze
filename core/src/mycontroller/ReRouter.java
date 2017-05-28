@@ -1,4 +1,4 @@
-package pathplan;
+package mycontroller;
 
 public class ReRouter {
 

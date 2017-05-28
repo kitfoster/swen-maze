@@ -1,12 +1,12 @@
-package pathplan;
+package mycontroller;
 
 import java.util.LinkedList;
 
 public class RouteAnalyser {
 	
-	Linked
 	
 	public LinkedList<Action> AnalyseRoute(Route route) {
+		return null;
 		
 	}
 

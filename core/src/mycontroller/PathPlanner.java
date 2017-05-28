@@ -1,6 +1,5 @@
-package pathplan;
+package mycontroller;
 
-import map.MapAnalyser;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;

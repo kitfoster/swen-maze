@@ -1,4 +1,4 @@
-package map;
+package mycontroller;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package map;
+package mycontroller;
 
 public class PotentialRoom {
 

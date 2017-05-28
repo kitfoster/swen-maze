@@ -1,8 +1,7 @@
-package pathplan;
+package mycontroller;
 
 import java.util.ArrayList;
 
-import map.MapAnalyser;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
