@@ -1,6 +1,7 @@
 package pathplan;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import map.MapAnalyser;
 import utilities.Coordinate;
@@ -30,7 +31,6 @@ public class Route {
 		
 		int diffX = nextX -thisX, diffY = nextY-thisY;
 		WorldSpatial.Direction direction = null;
-		
 		if(diffX>0){
 			direction = WorldSpatial.Direction.EAST;
 		}else if(diffX <0){
@@ -51,13 +51,11 @@ public class Route {
 		return false;
 	}
 	
-	
 	private boolean doesDirectionAlign(Car car, WorldSpatial.Direction direction) throws Exception{
 		if(direction ==null){
 			//System.out.println("Something is wrong");
 			throw new Exception("Wrong");
 		}
-		
 		if(car.getOrientation().equals(direction)){
 			//System.out.println("Car Orientation: "+car.getOrientation() + "Path Orientation" + direction);
 			return true;
@@ -83,7 +81,6 @@ public class Route {
 		}else{
 			System.out.println("Car coordinate: "+ carCoord.toString()+ "Next Tile Coordinate: "+ path.get(curStep).toString());
 		}
-		
 	
 		WorldSpatial.Direction direction = findPathDirection();
 		
@@ -191,8 +188,5 @@ public class Route {
 		}
 
 	}
-	
-	
-	
 
 }

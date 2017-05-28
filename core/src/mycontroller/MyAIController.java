@@ -20,27 +20,23 @@ import world.Car;
 import world.WorldSpatial;
 
 public class MyAIController extends CarController{
-	
 
-	public MyAIController(Car car) {
-		super(car);
-		// TODO Auto-generated constructor stub
-	}
+	
 
 	public enum State {Start, Planning, Going};
 	public static enum Direction {NORTH, SOUTH, EAST, WEST};
 	
-	private MapAnalyser map = new MapAnalyser();
+	private MapAnalyser mapAnalyser = new MapAnalyser();
 	private PathPlanner pathPlanner;
 	private Coordinate destination;
+	private Coordinate position;
 	private PotentialRoom currentRoom;
 	private ReRouter reRouter;
 	private Route currentRoute;
-	private Direction direction;
+	private WorldSpatial.Direction direction;
 	private LinkedList<Action> actionsToExcecute = new LinkedList<Action>();
 	private Action nextAction;
 	private Car car;
-	private float delta;
 	// How many minimum units the wall is away from the player.
 	private int wallSensitivity = 2;
 	
@@ -51,7 +47,7 @@ public class MyAIController extends CarController{
 	private boolean isTurningLeft = false;
 	private boolean isTurningRight = false; 
 	private WorldSpatial.Direction previousState = null; // Keeps track of the previous state
-	MapAnalyser mapAnalyser = new MapAnalyser();
+
 	// Car Speed to move at
 	private final float CAR_SPEED = 1.5f;
 	private PathPlanner planner= new WallPathPlanner();
@@ -59,6 +55,12 @@ public class MyAIController extends CarController{
 	
 	// Offset used to differentiate between 0 and 360 degrees
 	private int EAST_THRESHOLD = 3;
+	private float delta = 150f;
+	
+	public MyAIController(Car car) {
+		super(car);
+		// TODO Auto-generated constructor stub
+	}
 	
 	private pathplan.Route curRoute;
 	
@@ -346,24 +348,6 @@ public class MyAIController extends CarController{
 	 * @param currentView
 	 * @return
 	 */
-	private boolean checkFollowingWall(WorldSpatial.Direction orientation, HashMap<Coordinate, MapTile> currentView) {
-		
-		switch(orientation){
-		case EAST:
-			return checkNorth(currentView);
-		case NORTH:
-			return checkWest(currentView);
-		case SOUTH:
-			return checkEast(currentView);
-		case WEST:
-			return checkSouth(currentView);
-		default:
-			return false;
-		}
-		
-	}
-	
-
 	/**
 	 * Method below just iterates through the list and check in the correct coordinates.
 	 * i.e. Given your current position is 10,10
@@ -452,9 +436,28 @@ public class MyAIController extends CarController{
 		}
 		if (nextAction.getMove() == Move.LEFT_3_PT_TURN) {
 			// left 3 pt turn
+			car.applyReverseAcceleration();
+			// maybe some sleep(1) or something here
+			car.turnLeft(delta/2); // will do backwards 
+			car.brake();
+			car.applyForwardAcceleration();
+			car.turnRight(delta/2);
+			car.applyReverseAcceleration();
+			car.turnLeft(delta/2); // needs to be facing the right direction here
+			car.applyForwardAcceleration();
+			
 		}
 		if (nextAction.getMove() == Move.RIGHT_3_PT_TURN) {
 			// right 3 pt turn
+			car.applyReverseAcceleration();
+			// maybe some sleep(1) or something here
+			car.turnRight(delta/2); // will do backwards 
+			car.brake();
+			car.applyForwardAcceleration();
+			car.turnLeft(delta/2);
+			car.applyReverseAcceleration();
+			car.turnRight(delta/2); // needs to be facing the right direction here
+			car.applyForwardAcceleration();
 		}
 	}
 	
