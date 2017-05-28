@@ -1,6 +1,7 @@
 package mycontroller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import controller.CarController;
@@ -30,6 +31,9 @@ public class MyAIController extends CarController{
 	private LinkedList<Action> actionsToExcecute = new LinkedList<Action>();
 	private Action nextAction;
 	private Car car;
+	private float delta;
+	
+	private static HashMap<Coordinate,MapTile> mapTiles = new HashMap<Coordinate,MapTile>();
 	
 
 	public MyAIController(Car car) {
@@ -44,11 +48,14 @@ public class MyAIController extends CarController{
 	}
 
 	public void update(float delta, MapTile[][] tiles) {
-		// TODO Auto-generated method stub
+		
+		this.delta = delta;
+		
 		
 	}
 	
 	public Coordinate findDestTile() {
+		
 		return destination;
 	}
 	
@@ -72,6 +79,7 @@ public class MyAIController extends CarController{
 		}
 		if (nextAction.getMove() == Move.RIGHT_TURN) {
 			// turn right
+			this.car.turnRight(delta);
 		}
 		if (nextAction.getMove() == Move.LEFT_3_PT_TURN) {
 			// left 3 pt turn
