@@ -1,6 +1,7 @@
 package pathplan;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import utilities.Coordinate;
 import world.Car;
@@ -9,12 +10,12 @@ import world.WorldSpatial.Direction;
 import world.WorldSpatial.RelativeDirection;
 
 public class Route {
-	ArrayList<Coordinate> path;
+	LinkedList<Action> path;
 	private int steps=0;
 	private int curStep=0;
 	private boolean finished=false;
 	private WorldSpatial.Direction direction;
-	Route(ArrayList<Coordinate> path){
+	Route(LinkedList<Coordinate> path){
 		this.path=path;
 		this.steps = path.size();
 	}
@@ -28,7 +29,6 @@ public class Route {
 		
 		int diffX = nextX -thisX, diffY = nextY-thisY;
 		WorldSpatial.Direction direction = null;
-		
 		if(diffX>0){
 			direction = WorldSpatial.Direction.EAST;
 		}else if(diffX <0){
@@ -41,15 +41,11 @@ public class Route {
 		}
 		return direction;
 	}
-	
-	
-	
 	private boolean doesDirectionAlign(Car car, WorldSpatial.Direction direction) throws Exception{
 		if(direction ==null){
 			//System.out.println("Something is wrong");
 			throw new Exception("Wrong");
 		}
-		
 		if(car.getOrientation().equals(direction)){
 			//System.out.println("Car Orientation: "+car.getOrientation() + "Path Orientation" + direction);
 			return true;
@@ -69,7 +65,6 @@ public class Route {
 		}else{
 			//System.out.println("Car coordinate: "+ carCoord.toString()+ "Next Tile Coordinate: "+ path.get(curStep).toString());
 		}
-		
 	
 		WorldSpatial.Direction direction = findPathDirection();
 		
@@ -107,7 +102,7 @@ public class Route {
 		}
 	}
 	
-	public ArrayList<Coordinate> getPath(){
+	public LinkedList<Action> getPath(){
 		return path;
 	}
 	
@@ -122,8 +117,5 @@ public class Route {
 		}
 
 	}
-	
-	
-	
 
 }
