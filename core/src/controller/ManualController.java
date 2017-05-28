@@ -6,6 +6,8 @@ import world.Car;
 
 // Manual Controls for the car
 public class ManualController extends CarController{
+
+	
 	
 	public ManualController(Car car){
 		super(car);

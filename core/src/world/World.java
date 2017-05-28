@@ -44,6 +44,10 @@ public class World {
 	public static int MAP_WIDTH;
 	
 	private static String[] LAYER_NAME = {"Road","Utility","Trap","Wall"};
+	public static String WALL = "Wall";
+	public static String ROAD = "Road";
+	public static String TRAP = "TRAP";
+	public static String UTILITy = "Utility";
 	
 	private static HashMap<Coordinate,MapTile> mapTiles = new HashMap<Coordinate,MapTile>();
 	
@@ -66,7 +70,7 @@ public class World {
 		
 		// Add the car controller
 		// controller = new ManualController(car);
-		controller = new ManualController(car);
+		controller = new AIController(car);
 		// controller = new MyAIController(car);
 	}
 	

@@ -12,7 +12,7 @@ import world.WorldSpatial;
 
 public abstract class CarController {
 	
-	private Car car;
+	protected Car car;
 	
 	/**
 	 * Instantiates the car
