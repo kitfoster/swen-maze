@@ -12,6 +12,7 @@ import pathplan.Action.Move;
 import pathplan.PathPlanner;
 import pathplan.ReRouter;
 import pathplan.Route;
+import pathplan.WallPathPlanner;
 import tiles.MapTile;
 import utilities.Coordinate;
 import world.Car;
@@ -21,9 +22,10 @@ public class MyAIController extends CarController{
 	public static enum State {START, EXPLORE, REROUTING, SOLVING};
 	public static enum Direction {NORTH, SOUTH, EAST, WEST};
 	
-	private MapAnalyser map = new MapAnalyser();
+	private MapAnalyser mapAnalyser = new MapAnalyser();
 	private PathPlanner pathPlanner;
 	private Coordinate destination;
+	private Coordinate position;
 	private PotentialRoom currentRoom;
 	private ReRouter reRouter;
 	private Route currentRoute;
@@ -33,23 +35,23 @@ public class MyAIController extends CarController{
 	private Car car;
 	private float delta;
 	
-	private static HashMap<Coordinate,MapTile> mapTiles = new HashMap<Coordinate,MapTile>();
-	
 
 	public MyAIController(Car car) {
 		super(car);
 		this.car = car;
+		pathPlanner = new WallPathPlanner();
 	}
 	
 	@Override
 	public void update(float delta) {
 		// TODO Auto-generated method stub
-		
 	}
 
-	public void update(float delta, MapTile[][] tiles) {
+	public void update(float delta, HashMap<Coordinate, MapTile> tiles) {
 		
 		this.delta = delta;
+		mapAnalyser.update(tiles);
+		currentRoute = pathPlanner.findNewRoute(car, mapAnalyser, coor)
 		
 		
 	}
